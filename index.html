@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    canvas {
+      display: block;
+      margin: auto;
+      background-color: #000;
+    }
+  </style>
+  <title>River Raid Lite</title>
+</head>
+<body>
+  <canvas id="gameCanvas" width="600" height="400"></canvas>
+  <script>
+    // Constants
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const playerSize = 50;
+    const enemySize = 50;
+    const playerSpeed = 5;
+    const enemySpeed = 5;
+    const playerColor = '#00F';
+    const enemyColor = '#F00';
+
+    // Player
+    let player = {
+      x: canvas.width / 2 - playerSize / 2,
+      y: canvas.height - playerSize - 10,
+      width: playerSize,
+      height: playerSize,
+      color: playerColor,
+    };
+
+    // Enemy
+    let enemy = {
+      x: Math.random() * (canvas.width - enemySize),
+      y: -enemySize,
+      width: enemySize,
+      height: enemySize,
+      color: enemyColor,
+    };
+
+    // Game loop
+    function gameLoop() {
+      // Move player
+      window.addEventListener('keydown', handleKeyPress);
+
+      function handleKeyPress(event) {
+        switch (event.key) {
+          case 'ArrowLeft':
+            if (player.x - playerSpeed >= 0) player.x -= playerSpeed;
+            break;
+          case 'ArrowRight':
+            if (player.x + playerSize + playerSpeed <= canvas.width) player.x += playerSpeed;
+            break;
+        }
+      }
+
+      // Move enemy
+      enemy.y += enemySpeed;
+      if (enemy.y > canvas.height) {
+        enemy.x = Math.random() * (canvas.width - enemySize);
+        enemy.y = -enemySize;
+      }
+
+      // Check for collisions
+      if (
+        player.x < enemy.x + enemy.width &&
+        player.x + player.width > enemy.x &&
+        player.y < enemy.y + enemy.height &&
+        player.y + player.height > enemy.y
+      ) {
+        alert('Game Over!');
+        document.location.reload();
+      }
+
+      // Draw everything
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawRect(player);
+      drawRect(enemy);
+
+      // Request next frame
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Helper function to draw a rectangle
+    function drawRect(obj) {
+      ctx.fillStyle = obj.color;
+      ctx.fillRect(obj.x, obj.y, obj.width, obj.height);
+    }
+
+    // Start the game loop
+    gameLoop();
+  </script>
+</body>
+</html>
